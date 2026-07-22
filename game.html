@@ -1,0 +1,177 @@
+!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kristal Snake</title>
+
+<style>
+
+body{
+margin:0;
+background:#050816;
+font-family:Arial;
+color:white;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+height:100vh;
+overflow:hidden;
+}
+
+h1{
+color:#00ffff;
+text-shadow:0 0 10px cyan;
+margin-bottom:5px;
+}
+
+#score{
+font-size:24px;
+margin-bottom:15px;
+}
+
+canvas{
+background:#0b1025;
+border:3px solid cyan;
+box-shadow:0 0 20px cyan;
+}
+
+button{
+margin-top:20px;
+padding:12px 20px;
+font-size:18px;
+background:#00aaff;
+color:white;
+border:none;
+border-radius:12px;
+cursor:pointer;
+}
+
+button:hover{
+background:#0088cc;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>💎 Kristal Snake</h1>
+
+<div id="score">Skor: 0</div>
+
+<canvas id="game" width="400" height="400"></canvas>
+
+<button onclick="location.href='index.html'">
+⬅ Ana Menü
+</button>
+
+<script>
+
+const canvas=document.getElementById("game");
+const ctx=canvas.getContext("2d");
+
+const box=20;
+
+let snake=[
+{x:10,y:10}
+];
+
+let food={
+x:Math.floor(Math.random()*20),
+y:Math.floor(Math.random()*20)
+};
+
+let score=0;
+
+let direction="RIGHT";
+
+document.addEventListener("keydown",changeDirection);
+
+function changeDirection(e){
+
+if(e.key==="ArrowUp"&&direction!="DOWN")
+direction="UP";
+
+if(e.key==="ArrowDown"&&direction!="UP")
+direction="DOWN";
+
+if(e.key==="ArrowLeft"&&direction!="RIGHT")
+direction="LEFT";
+
+if(e.key==="ArrowRight"&&direction!="LEFT")
+direction="RIGHT";
+
+}
+function drawGame(){
+
+ctx.clearRect(0,0,400,400);
+
+// Kristal
+ctx.fillStyle="cyan";
+ctx.beginPath();
+ctx.arc(food.x*box+10,food.y*box+10,8,0,Math.PI*2);
+ctx.fill();
+
+// Yılan
+for(let i=0;i<snake.length;i++){
+
+ctx.fillStyle=(i==0)?"#00aaff":"#3399ff";
+ctx.fillRect(snake[i].x*box,snake[i].y*box,box,box);
+
+}
+
+let headX=snake[0].x;
+let headY=snake[0].y;
+
+if(direction=="LEFT") headX--;
+if(direction=="RIGHT") headX++;
+if(direction=="UP") headY--;
+if(direction=="DOWN") headY++;
+
+// Duvara çarpma
+if(headX<0||headY<0||headX>=20||headY>=20){
+clearInterval(game);
+alert("💀 Oyun Bitti!\nSkor: "+score);
+location.reload();
+}
+
+// Kendine çarpma
+for(let i=0;i<snake.length;i++){
+if(headX==snake[i].x&&headY==snake[i].y){
+clearInterval(game);
+alert("💀 Oyun Bitti!\nSkor: "+score);
+location.reload();
+}
+}
+
+let newHead={x:headX,y:headY};
+
+if(headX==food.x&&headY==food.y){
+
+score++;
+document.getElementById("score").innerHTML="⭐ Skor: "+score;
+
+food={
+x:Math.floor(Math.random()*20),
+y:Math.floor(Math.random()*20)
+};
+
+}else{
+
+snake.pop();
+
+}
+
+snake.unshift(newHead);
+
+}
+
+let game=setInterval(drawGame,150);
+
+</script>
+
+</body>
+</html>
